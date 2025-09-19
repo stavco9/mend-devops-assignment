@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "flask-hello-world.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "flask-hello-world.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.microservice.replicas }} 
+  selector:
+    matchLabels:
+      {{- include "flask-hello-world.selectorLabels" . | nindent 6 }}  
+  template:
+    metadata:
+      {{- if include "flask-hello-world.deployment.annotations" . }}
+      annotations:
+        {{- include "flask-hello-world.deployment.annotations" . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "flask-hello-world.selectorLabels" . | nindent 8 }}  
+    spec:
+      serviceAccountName: {{ include "flask-hello-world.name" . }}
+      containers:
+        - name: {{ include "flask-hello-world.name" . }}  
+          image: "{{ .Values.imagePath }}:{{ .Values.microservice.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: Always
+          env:
+          - name: ENVIRONMENT
+            value: {{ .Values.microservice.environment | upper }}
+          - name: MICROSERVICE
+            value: {{ .Values.microservice.name }}
+          - name: LOG_LEVEL
+            value: {{ .Values.microservice.logLevel }}
+          ports:
+            - name: {{ .Values.microservice.protocol }}
+              containerPort: {{ .Values.microservice.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.microservice.healthCheckPath }}
+              port: {{ .Values.microservice.protocol }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.microservice.healthCheckPath }}
+              port: {{ .Values.microservice.protocol }}
+          resources:
+            limits:
+              memory: {{ .Values.resources.memory }}
+              cpu: {{ .Values.resources.cpu }}
+            requests:
+              memory: {{ .Values.resources.memory }}
+              cpu: {{ .Values.resources.cpu }}

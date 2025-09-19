@@ -1,4 +1,3 @@
-from re import S
 import boto3
 import botocore
 from typing import Optional

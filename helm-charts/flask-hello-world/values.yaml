@@ -1,0 +1,43 @@
+# Global variables
+microservice:
+  name: flask-hello-world
+  tag: latest
+  environment: dev
+  port: 5000
+  healthCheckPath: /
+  logLevel: INFO
+  protocol: http
+  replicas: 2
+
+resources:
+  memory: 128Mi
+  cpu: 100m
+
+autoscaling:
+  enabled: false
+  minPods: 1
+  maxPods: 10
+  cpu:
+    enabled: false
+    percentage: 90
+  memory:
+    enabled: false
+    percentage: 70
+  customMetrics: []
+  ###
+  ### customMetrics:
+  ### - name: sessions_counter
+  ###   threshold: 2
+  ###
+
+prometheusMetrics:
+  enabled: false
+
+# Image variables
+imagePath: digitalocean/flask-helloworld
+
+# If enableing ingress, the external URL will be https://{{ microservice.name }}-{{ microservice.environment }}.k8s.stavco9.com
+ingress:
+  enabled: true
+  ingressClassName: alb
+  host: flask-hello-world.example.com

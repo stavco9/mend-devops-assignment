@@ -1,0 +1,30 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "flask-hello-world.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "flask-hello-world.labels" . | nindent 4 }}
+  annotations:
+    {{- include "flask-hello-world.ingress.annotations" . | nindent 4 }}
+spec:
+  ingressClassName: {{ include "flask-hello-world.ingressClassName" . }}
+  {{- if .Values.microservice.protocol | eq "https" }}
+  tls:
+    - hosts:
+      - "{{ .Values.ingress.host }}"
+      secretName: "tls-{{- include "flask-hello-world.name" . }}"
+  {{- end }}
+  rules:
+  - host: "{{ .Values.ingress.host }}"
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ include "flask-hello-world.name" . }}
+              port:
+                number: {{ .Values.microservice.port }}
+{{- end }}

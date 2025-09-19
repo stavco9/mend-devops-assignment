@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "flask-hello-world.name" . }}-test-connection"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "flask-hello-world.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "flask-hello-world.name" . }}:{{ .Values.microservice.port }}']
+  restartPolicy: Never

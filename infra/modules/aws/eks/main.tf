@@ -5,6 +5,7 @@ locals {
     Project     = var.project
     Owner       = var.owner
     ManagedBy   = "terraform"
+    EKS_Cluster = local.cluster_name
   }
 
   cluster_name       = format("k8s-%s-%s", var.project, var.environment)
@@ -58,8 +59,6 @@ module "eks" {
       desired_size = var.nodes_desired_size
     }
   }
-
-  cluster_tags = { Cluster = local.cluster_name }
 
   tags = local.tags
 }

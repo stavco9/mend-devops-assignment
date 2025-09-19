@@ -19,5 +19,5 @@ output "cluster_certificate_authority_data" {
 }
 
 output "cluster_dns_suffix" {
-  value = local.cluster_dns_suffix
+  value = module.eks.cluster_dns_suffix
 }
