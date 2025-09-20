@@ -1,12 +1,12 @@
 terraform {
   required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 6.0"
-    }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.0"
+      version = "~> 4.0"
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "3.0.2"
     }
   }
 
@@ -17,7 +17,7 @@ terraform {
     resource_group_name  = "mend-devops-dev-west-europe-rg"
     storage_account_name = "menddevopsdevwe5f9ccf0b"
     container_name       = "terraform-state"
-    key                  = "dev/dns/terraform.tfstate"
+    key                  = "dev/west-europe/aks/terraform.tfstate"
   }
 }
 
@@ -27,7 +27,11 @@ provider "azurerm" {
   tenant_id       = "5f9ccf0b-2066-472e-993a-438adb2f77e0"
 }
 
-provider "aws" {
-  profile = "stav-devops"
-  region  = "us-east-1"
+provider "helm" {
+  kubernetes = {
+    host                   = module.eks.cluster_endpoint
+    client_certificate     = base64decode(module.aks.client_certificate)
+    client_key             = base64decode(module.aks.client_key)
+    cluster_ca_certificate = base64decode(module.aks.cluster_ca_certificate)
+  }
 }

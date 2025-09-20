@@ -1,8 +1,8 @@
 locals {
-  project = "mend-devops"
+  project     = "mend-devops"
   environment = "dev"
-  region = "West Europe"
-  
+  region      = "West Europe"
+
   tags = {
     Environment = local.environment
     Region      = local.region
@@ -22,9 +22,9 @@ data "aws_route53_zone" "stav_devops_delegation" {
 }
 
 resource "azurerm_dns_zone" "mend_devops" {
-  name = local.dns_zone
+  name                = local.dns_zone
   resource_group_name = local.resource_group_name
-  tags = local.tags
+  tags                = local.tags
 }
 
 resource "aws_route53_record" "stav_devops_delegation" {
