@@ -76,14 +76,12 @@ module "aks" {
   nodes_desired_size = 2
 
   # Add-ons settings
-  enable_metrics_server                = true
-  metrics_server_version               = "3.13.0"
-  enable_aws_load_balancer_controller  = true
-  aws_load_balancer_controller_version = "1.13.4"
-  enable_eks_pod_identity_webhook      = true
-  eks_pod_identity_webhook_version     = "2.5.2"
-  enable_cert_manager                  = true
-  cert_manager_version                 = "v1.18.2"
-  enable_external_dns                  = true
-  external_dns_version                 = "1.19.0"
+  enable_metrics_server                        = true
+  metrics_server_version                       = "3.13.0"
+  enable_azure_application_gateway_controller  = true
+  azure_application_gateway_controller_version = "1.7.3"
+  enable_cert_manager                          = true
+  cert_manager_version                         = "v1.18.2"
+  enable_external_dns                          = true
+  external_dns_version                         = "1.19.0"
 }

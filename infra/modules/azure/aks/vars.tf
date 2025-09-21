@@ -77,34 +77,14 @@ variable "metrics_server_version" {
   default = "3.13.0"
 }
 
-variable "enable_aws_load_balancer_controller" {
+variable "enable_azure_application_gateway_controller" {
   type    = bool
   default = true
 }
 
-variable "aws_load_balancer_controller_version" {
+variable "azure_application_gateway_controller_version" {
   type    = string
-  default = "1.13.4"
-}
-
-variable "enable_external_dns" {
-  type    = bool
-  default = true
-}
-
-variable "external_dns_version" {
-  type    = string
-  default = "1.19.0"
-}
-
-variable "enable_eks_pod_identity_webhook" {
-  type    = bool
-  default = true
-}
-
-variable "eks_pod_identity_webhook_version" {
-  type    = string
-  default = "2.5.2"
+  default = "1.7.3"
 }
 
 variable "enable_cert_manager" {
@@ -115,4 +95,14 @@ variable "enable_cert_manager" {
 variable "cert_manager_version" {
   type    = string
   default = "v1.18.2"
+}
+
+variable "enable_external_dns" {
+  type    = bool
+  default = true
+}
+
+variable "external_dns_version" {
+  type    = string
+  default = "1.19.0"
 }

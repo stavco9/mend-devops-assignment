@@ -1,3 +1,7 @@
+output "cluster_id" {
+  value = module.aks.cluster_id
+}
+
 output "cluster_endpoint" {
   value = module.aks.cluster_endpoint
 

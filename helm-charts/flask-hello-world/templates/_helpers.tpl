@@ -49,21 +49,56 @@ prometheus.io/port: "{{ .Values.microservice.port }}"
 Ingress annotations
 */}}
 {{- define "flask-hello-world.ingress.annotations" -}}
-{{- if .Values.microservice.protocol | eq "https" }}
-acme.cert-manager.io/http01-edit-in-place: 'true'
+
+{{/*
+Use Let's Encrypt ACME for any Ingress Controller which is no AWS ALB (Since in ALB we use the AWS ACM Certificate)
+*/}}
+{{- if and (.Values.ingress.protocol | eq "https") (.Values.provider | ne "aws") (.Values.ingress.ingressClassName | ne "alb") }}
 cert-manager.io/cluster-issuer: letsencrypt-prod
 kubernetes.io/tls-acme: 'true'
 {{- end }}
-{{- if .Values.ingress.ingressClassName | eq "nginx" }}
+
+{{/*
+Annotation for NGINX Ingress Controller
+*/}}
+{{- if and (.Values.ingress.protocol | eq "https") (.Values.ingress.ingressClassName | eq "nginx") }}
 nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
 {{- end }}
-{{- if .Values.ingress.ingressClassName | eq "alb" }}
+
+{{/*
+Annotations for AWS LB Controller
+*/}}
+{{- if and (.Values.provider | eq "aws") (.Values.ingress.ingressClassName | eq "alb") }}
 alb.ingress.kubernetes.io/scheme: internet-facing
 alb.ingress.kubernetes.io/target-type: ip
 alb.ingress.kubernetes.io/backend-protocol: "{{ .Values.microservice.protocol | upper }}"
+{{/*
+Whether the ALB listens on HTTP or HTTPS (In case of HTTPS it redirects HTTP traffic to HTTPS)
+*/}}
+{{- if .Values.ingress.protocol | eq "https" }}
 alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}, {"HTTPS":443}]'
 alb.ingress.kubernetes.io/ssl-redirect: '443'
+{{- else }}
+alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
 {{- end }}
+{{- end }}
+
+{{/*
+Annotations for Azure AppGW Controller
+*/}}
+{{- if and (.Values.provider | eq "azure") (.Values.ingress.ingressClassName | eq "appgw") }}
+kubernetes.io/ingress.class: azure/application-gateway
+{{/*
+Whether the APPGW listens on HTTP or HTTPS (In case of HTTPS it redirects HTTP traffic to HTTPS)
+*/}}
+{{- if .Values.ingress.protocol | eq "https" }}
+appgw.ingress.kubernetes.io/ssl-redirect: "true"
+{{- end }}
+{{- end }}
+
+{{/*
+Add the host in the external DNS Annotation in order to create a DNS Record in the Cloud Provider
+*/}}
 external-dns.alpha.kubernetes.io/hostname: {{ .Values.ingress.host }}
 {{- end }}
 

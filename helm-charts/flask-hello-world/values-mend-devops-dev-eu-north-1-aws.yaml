@@ -1,4 +1,7 @@
+provider: aws
+
 ingress:
   enabled: true
+  protocol: https
   ingressClassName: alb
   host: flask-hello-world.k8s.eu-north-1.dev.aws.mend-devops.stavco9.com

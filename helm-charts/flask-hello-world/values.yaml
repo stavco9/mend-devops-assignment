@@ -36,8 +36,11 @@ prometheusMetrics:
 # Image variables
 imagePath: digitalocean/flask-helloworld
 
+provider: aws
+
 # If enableing ingress, the external URL will be https://{{ microservice.name }}-{{ microservice.environment }}.k8s.stavco9.com
 ingress:
   enabled: true
+  protocol: https
   ingressClassName: alb
   host: flask-hello-world.example.com

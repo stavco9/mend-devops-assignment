@@ -11,5 +11,5 @@ module "networking" {
   vnet_private_subnet_cidr = "10.0.6.0/24"
   vnet_public_subnet_cidr  = "10.0.7.0/24"
 
-  enable_nat_gateway = true
+  enable_nat_gateway                   = true
 }

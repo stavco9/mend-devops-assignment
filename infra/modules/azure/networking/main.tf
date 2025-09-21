@@ -34,6 +34,18 @@ resource "azurerm_subnet" "vnet_public_subnet" {
   virtual_network_name              = azurerm_virtual_network.vnet.name
   private_endpoint_network_policies = "Enabled"
   default_outbound_access_enabled   = true
+
+  delegation {
+    name = "${local.vnet_name}-public-sn-appgw-delegation"
+
+    service_delegation {
+      name = "Microsoft.Network/applicationGateways"
+
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/join/action",
+      ]
+    }
+  }
 }
 
 resource "azurerm_public_ip" "vnet_public_ip" {

@@ -9,8 +9,11 @@ metadata:
   annotations:
     {{- include "flask-hello-world.ingress.annotations" . | nindent 4 }}
 spec:
+  {{/* Azure Application Gateway does not support ingressClassName */}}
+  {{- if .Values.ingress.ingressClassName | ne "appgw" }}
   ingressClassName: {{ include "flask-hello-world.ingressClassName" . }}
-  {{- if .Values.microservice.protocol | eq "https" }}
+  {{- end }}
+  {{- if .Values.ingress.protocol | eq "https" }}
   tls:
     - hosts:
       - "{{ .Values.ingress.host }}"

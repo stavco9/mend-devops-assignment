@@ -1,0 +1,15 @@
+clusterIssuers:
+- name: letsencrypt-prod
+  spec:
+    acme:
+      email: stavco9@gmail.com
+      server: https://acme-v02.api.letsencrypt.org/directory
+      privateKeySecretRef:
+        name: letsencrypt-prod
+      solvers:
+      - http01:
+          ingress:
+            ingressTemplate:
+              metadata:
+                annotations:
+                  kubernetes.io/ingress.class: azure/application-gateway

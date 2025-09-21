@@ -8,6 +8,10 @@ terraform {
       source  = "hashicorp/helm"
       version = "3.0.2"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "2.38.0"
+    }
   }
 
   backend "azurerm" {
@@ -29,9 +33,22 @@ provider "azurerm" {
 
 provider "helm" {
   kubernetes = {
-    host                   = module.eks.cluster_endpoint
-    client_certificate     = base64decode(module.aks.client_certificate)
-    client_key             = base64decode(module.aks.client_key)
+    host                   = module.aks.cluster_endpoint
     cluster_ca_certificate = base64decode(module.aks.cluster_ca_certificate)
+    exec = {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      args        = ["get-token", "--login", "azurecli", "--server-id", "6dae42f8-4368-4678-94ff-3960e28e3630"]
+      command     = "kubelogin"
+    }
+  }
+}
+
+provider "kubernetes" {
+  host                   = module.aks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.aks.cluster_ca_certificate)
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    args        = ["get-token", "--login", "azurecli", "--server-id", "6dae42f8-4368-4678-94ff-3960e28e3630"]
+    command     = "kubelogin"
   }
 }

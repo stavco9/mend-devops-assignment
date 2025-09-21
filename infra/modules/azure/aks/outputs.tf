@@ -10,6 +10,10 @@ output "cluster_name" {
   value = module.aks.aks_name
 }
 
+output "cluster_id" {
+  value = module.aks.aks_id
+}
+
 output "client_certificate" {
   value = module.aks.client_certificate
 }
