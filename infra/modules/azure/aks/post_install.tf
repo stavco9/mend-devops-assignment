@@ -98,7 +98,7 @@ module "external_dns_workload_identity" {
   kubernetes_sa_name      = "external-dns"
 
   workload_identity_scopes = [
-    data.azurerm_resource_group.current.id,
+    data.azurerm_resource_group.dns_zone.id,
     var.dns_zone_id
   ]
   workload_identity_roles = ["Reader", "DNS Zone Contributor"]
@@ -115,7 +115,7 @@ resource "kubernetes_secret" "external_dns" {
     "azure.json" = jsonencode({
       tenantId                     = data.azurerm_client_config.current.tenant_id
       subscriptionId               = data.azurerm_client_config.current.subscription_id
-      resourceGroup                = local.resource_group_name
+      resourceGroup                = var.dns_zone_resource_group_name
       useWorkloadIdentityExtension = true
     })
   }

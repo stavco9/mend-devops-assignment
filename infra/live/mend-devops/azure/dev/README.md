@@ -1,6 +1,6 @@
 # Azure Dev Environment Infrastructure
 
-This directory contains the Terraform configurations for deploying Azure infrastructure in the development environment. The infrastructure includes AKS cluster, networking components, DNS management, and Application Gateway.
+This directory contains the Terraform configurations for deploying Azure infrastructure in the development environment across multiple regions. The infrastructure includes AKS clusters, networking components, DNS management, and Application Gateway with multi-region support.
 
 ## Prerequisites
 
@@ -36,9 +36,9 @@ This script will:
 
 ## Terraform Execution Order
 
-The infrastructure must be deployed in the following specific order due to dependencies between components:
+The infrastructure must be deployed in the following specific order due to dependencies between components. The DNS module is global and only needs to be deployed once, while the networking and AKS modules need to be deployed for each region.
 
-### 1. DNS Module
+### 1. DNS Module (Global - Deploy Once)
 **Location:** `./dns/`
 **Purpose:** Sets up Azure DNS zone for the dev environment domain management.
 
@@ -52,10 +52,11 @@ terraform apply
 **Dependencies:** None
 **Outputs:** DNS zone ID and name servers
 
-### 2. Networking Module
-**Location:** `./west-europe/networking/`
-**Purpose:** Creates Virtual Network, subnets, and network security groups for the AKS cluster.
+### 2. Regional Infrastructure (Deploy for Each Region)
 
+#### West Europe (west-europe)
+
+**Networking Module:**
 ```bash
 cd west-europe/networking/
 terraform init
@@ -63,13 +64,7 @@ terraform plan
 terraform apply
 ```
 
-**Dependencies:** None
-**Outputs:** Virtual Network ID, subnet IDs, and network security group IDs
-
-### 3. AKS Module
-**Location:** `./west-europe/aks/`
-**Purpose:** Deploys the AKS cluster with node pools, Application Gateway, and essential add-ons.
-
+**AKS Module:**
 ```bash
 cd west-europe/aks/
 terraform init
@@ -77,9 +72,27 @@ terraform plan
 terraform apply
 ```
 
-**Dependencies:** 
+#### East US (east-us)
+
+**Networking Module:**
+```bash
+cd east-us/networking/
+terraform init
+terraform plan
+terraform apply
+```
+
+**AKS Module:**
+```bash
+cd east-us/aks/
+terraform init
+terraform plan
+terraform apply
+```
+
+**Dependencies for each region:**
 - DNS module (for DNS configuration)
-- Networking module (for Virtual Network and subnets)
+- Regional networking module (for Virtual Network and subnets)
 
 **Outputs:** Cluster endpoint, certificate authority data, and Application Gateway information
 
@@ -87,17 +100,49 @@ terraform apply
 
 Each Terraform module includes detailed documentation:
 
+### Global Modules
 - [DNS Module](./dns/README.md) - Azure DNS zone management
+
+### Regional Modules
+
+#### West Europe (west-europe)
 - [Networking Module](./west-europe/networking/README.md) - Virtual Network and networking components
 - [AKS Module](./west-europe/aks/README.md) - Kubernetes cluster and add-ons
 
+#### East US (east-us)
+- [Networking Module](./east-us/networking/README.md) - Virtual Network and networking components
+- [AKS Module](./east-us/aks/README.md) - Kubernetes cluster and add-ons
+
 ## Post-Deployment
 
-After successful deployment:
+After successful deployment for each region:
+
+### West Europe (west-europe)
 
 1. **Configure kubectl:**
    ```bash
-   az aks get-credentials --resource-group mend-devops-dev-west-europe-rg --name mend-devops-dev-aks
+   az aks get-credentials --resource-group mend-devops-dev-west-europe-rg --name k8s-mend-devops-dev-aks
+   kubelogin convert-kubeconfig -l azurecli
+   ```
+
+2. **Verify cluster access:**
+   ```bash
+   kubectl get nodes
+   kubectl get pods -A
+   ```
+
+3. **Check installed add-ons:**
+   - Application Gateway Ingress Controller
+   - Cert-Manager
+   - External DNS
+   - Workload Identity
+
+### East US (east-us)
+
+1. **Configure kubectl:**
+   ```bash
+   az aks get-credentials --resource-group mend-devops-dev-east-us-rg --name k8s-mend-devops-dev-aks
+   kubelogin convert-kubeconfig -l azurecli
    ```
 
 2. **Verify cluster access:**

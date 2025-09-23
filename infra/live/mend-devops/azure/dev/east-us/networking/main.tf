@@ -1,8 +1,8 @@
 module "networking" {
   source = "../../../../../../modules/azure/networking"
 
-  resource_group_name = "mend-devops-dev-west-europe-rg"
-  region              = "West Europe"
+  resource_group_name = "mend-devops-dev-east-us-rg"
+  region              = "East US"
   project             = "mend-devops"
   owner               = "stavco9@gmail.com"
   environment         = "dev"
@@ -12,5 +12,5 @@ module "networking" {
   vnet_public_subnet_cidr  = "10.0.7.0/24"
 
   enable_nat_gateway                   = true
-  create_resource_group                = false
+  create_resource_group                = true
 }

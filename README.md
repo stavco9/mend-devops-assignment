@@ -47,8 +47,13 @@ Once the infrastructure is ready, deploy the sample Flask application:
 
 After successful deployment, the Flask Hello World application will be available at:
 
-- **AWS EKS:** https://flask-hello-world.k8s.eu-north-1.dev.aws.mend-devops.stavco9.com
-- **Azure AKS:** https://flask-hello-world.k8s.west-europe.dev.azure.mend-devops.stavco9.com
+### AWS EKS Clusters
+- **EU North 1:** https://flask-hello-world.k8s.eu-north-1.dev.aws.mend-devops.stavco9.com
+- **US East 1:** https://flask-hello-world.k8s.us-east-1.dev.aws.mend-devops.stavco9.com
+
+### Azure AKS Clusters
+- **West Europe:** https://flask-hello-world.k8s.west-europe.dev.azure.mend-devops.stavco9.com
+- **East US:** https://flask-hello-world.k8s.east-us.dev.azure.mend-devops.stavco9.com
 
 ## 🛠️ Technology Stack
 
@@ -136,18 +141,21 @@ Before starting, ensure you have the following tools installed:
 
 ## 🎯 Key Features
 
-### Multi-Cloud Support
-- Identical application deployment on both AWS and Azure
+### Multi-Cloud & Multi-Region Support
+- Identical application deployment on both AWS and Azure across multiple regions
 - Cloud-native ingress controllers (ALB for AWS, Application Gateway for Azure)
 - Automatic DNS management with External DNS
 - SSL certificate automation with Let's Encrypt
+- Global infrastructure modules with regional deployments
+- Cross-region redundancy and disaster recovery capabilities
 
 ### Production-Ready Configuration
-- High availability across multiple availability zones
+- High availability across multiple availability zones and regions
 - Horizontal Pod Autoscaling (HPA) support
 - Resource limits and requests
 - Health checks and monitoring
 - Comprehensive logging and metrics
+- Multi-region deployment capabilities
 
 ### DevOps Best Practices
 - Infrastructure as Code with Terraform

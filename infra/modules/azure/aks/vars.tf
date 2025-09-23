@@ -30,6 +30,10 @@ variable "dns_zone_id" {
   type = string
 }
 
+variable "dns_zone_resource_group_name" {
+  type = string
+}
+
 variable "kubernetes_version" {
   type = string
 }

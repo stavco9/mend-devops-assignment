@@ -1,6 +1,6 @@
 # AWS Dev Environment Infrastructure
 
-This directory contains the Terraform configurations for deploying AWS infrastructure in the development environment. The infrastructure includes EKS cluster, networking components, IAM roles, and DNS management.
+This directory contains the Terraform configurations for deploying AWS infrastructure in the development environment across multiple regions. The infrastructure includes EKS clusters, networking components, IAM roles, and DNS management with multi-region support.
 
 ## Prerequisites
 
@@ -35,11 +35,11 @@ This script will:
 
 ## Terraform Execution Order
 
-The infrastructure must be deployed in the following specific order due to dependencies between components:
+The infrastructure must be deployed in the following specific order due to dependencies between components. The IAM and Route53 modules are global and only need to be deployed once, while the networking and EKS modules need to be deployed for each region.
 
-### 1. IAM Module
+### 1. IAM Module (Global - Deploy Once)
 **Location:** `./iam/`
-**Purpose:** Creates IAM policies and roles required by the EKS cluster and other AWS services.
+**Purpose:** Creates IAM policies and roles required by the EKS clusters and other AWS services.
 
 ```bash
 cd iam/
@@ -51,7 +51,7 @@ terraform apply
 **Dependencies:** None
 **Outputs:** IAM policy ARNs for load balancer controller and external DNS
 
-### 2. Route53 Module  
+### 2. Route53 Module (Global - Deploy Once)
 **Location:** `./route53/`
 **Purpose:** Sets up DNS zone delegation from the root domain (stavco9.com) to the dev environment.
 
@@ -65,10 +65,11 @@ terraform apply
 **Dependencies:** None
 **Outputs:** DNS zone ID and name servers
 
-### 3. Networking Module
-**Location:** `./eu-north-1/networking/`
-**Purpose:** Creates VPC, subnets, NAT gateways, and security groups for the EKS cluster.
+### 3. Regional Infrastructure (Deploy for Each Region)
 
+#### EU North 1 (eu-north-1)
+
+**Networking Module:**
 ```bash
 cd eu-north-1/networking/
 terraform init
@@ -76,13 +77,7 @@ terraform plan
 terraform apply
 ```
 
-**Dependencies:** None
-**Outputs:** VPC ID, subnet IDs, and security group IDs
-
-### 4. EKS Module
-**Location:** `./eu-north-1/eks/`
-**Purpose:** Deploys the EKS cluster with node groups, IRSA, and essential add-ons.
-
+**EKS Module:**
 ```bash
 cd eu-north-1/eks/
 terraform init
@@ -90,10 +85,28 @@ terraform plan
 terraform apply
 ```
 
-**Dependencies:** 
+#### US East 1 (us-east-1)
+
+**Networking Module:**
+```bash
+cd us-east-1/networking/
+terraform init
+terraform plan
+terraform apply
+```
+
+**EKS Module:**
+```bash
+cd us-east-1/eks/
+terraform init
+terraform plan
+terraform apply
+```
+
+**Dependencies for each region:**
 - IAM module (for service account policies)
 - Route53 module (for DNS configuration)
-- Networking module (for VPC and subnets)
+- Regional networking module (for VPC and subnets)
 
 **Outputs:** Cluster endpoint, certificate authority data, and OIDC provider information
 
@@ -101,18 +114,48 @@ terraform apply
 
 Each Terraform module includes detailed documentation:
 
+### Global Modules
 - [IAM Module](./iam/README.md) - IAM policies and roles
 - [Route53 Module](./route53/README.md) - DNS zone management
+
+### Regional Modules
+
+#### EU North 1 (eu-north-1)
 - [Networking Module](./eu-north-1/networking/README.md) - VPC and networking components
 - [EKS Module](./eu-north-1/eks/README.md) - Kubernetes cluster and add-ons
 
+#### US East 1 (us-east-1)
+- [Networking Module](./us-east-1/networking/README.md) - VPC and networking components
+- [EKS Module](./us-east-1/eks/README.md) - Kubernetes cluster and add-ons
+
 ## Post-Deployment
 
-After successful deployment:
+After successful deployment for each region:
+
+### EU North 1 (eu-north-1)
 
 1. **Configure kubectl:**
    ```bash
-   aws eks update-kubeconfig --region eu-north-1 --name mend-devops-dev-eks --profile mend-devops
+   aws eks update-kubeconfig --region eu-north-1 --name k8s-mend-devops-dev --profile mend-devops
+   ```
+
+2. **Verify cluster access:**
+   ```bash
+   kubectl get nodes
+   kubectl get pods -A
+   ```
+
+3. **Check installed add-ons:**
+   - AWS Load Balancer Controller
+   - External DNS
+   - Metrics Server
+   - Cert-Manager (if enabled)
+
+### US East 1 (us-east-1)
+
+1. **Configure kubectl:**
+   ```bash
+   aws eks update-kubeconfig --region us-east-1 --name k8s-mend-devops-dev --profile mend-devops
    ```
 
 2. **Verify cluster access:**

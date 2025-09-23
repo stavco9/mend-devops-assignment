@@ -16,6 +16,8 @@ Before deploying this Helm chart, ensure you have:
 
 ### AWS EKS Cluster Connection
 
+#### EU North 1 (eu-north-1)
+
 1. **Configure AWS CLI with the correct profile:**
    ```bash
    # Ensure you have the mend-devops profile configured with access keys
@@ -39,7 +41,34 @@ Before deploying this Helm chart, ensure you have:
    kubectl get pods -A
    ```
 
+#### US East 1 (us-east-1)
+
+1. **Configure AWS CLI with the correct profile:**
+   ```bash
+   # Ensure you have the mend-devops profile configured with access keys
+   aws configure list --profile mend-devops
+   ```
+
+2. **Update kubeconfig for the EKS cluster:**
+   ```bash
+   aws eks update-kubeconfig --region us-east-1 --name k8s-mend-devops-dev --profile mend-devops
+   ```
+
+3. **Verify the correct context is active:**
+   ```bash
+   kubectl config current-context
+   # Should show: arn:aws:eks:us-east-1:739929374881:cluster/k8s-mend-devops-dev
+   ```
+
+4. **Test cluster connectivity:**
+   ```bash
+   kubectl get nodes
+   kubectl get pods -A
+   ```
+
 ### Azure AKS Cluster Connection
+
+#### West Europe (west-europe)
 
 1. **Login to Azure CLI with device code:**
    ```bash
@@ -73,9 +102,45 @@ Before deploying this Helm chart, ensure you have:
    kubectl get pods -A
    ```
 
+#### East US (east-us)
+
+1. **Login to Azure CLI with device code:**
+   ```bash
+   az login --tenant 5f9ccf0b-2066-472e-993a-438adb2f77e0 --use-device-code
+   ```
+
+2. **Set the active subscription:**
+   ```bash
+   az account set --subscription 2bcfe589-26cd-455a-bdd4-b8975088c52f
+   ```
+
+3. **Get AKS cluster credentials:**
+   ```bash
+   az aks get-credentials --resource-group mend-devops-dev-east-us-rg --name k8s-mend-devops-dev-aks
+   ```
+
+4. **Convert kubeconfig for kubelogin:**
+   ```bash
+   kubelogin convert-kubeconfig -l azurecli
+   ```
+
+5. **Verify the correct context is active:**
+   ```bash
+   kubectl config current-context
+   # Should show: k8s-mend-devops-dev-aks
+   ```
+
+6. **Test cluster connectivity:**
+   ```bash
+   kubectl get nodes
+   kubectl get pods -A
+   ```
+
 ## Deployment
 
 ### AWS Deployment
+
+#### EU North 1 (eu-north-1)
 
 1. **Navigate to the chart directory:**
    ```bash
@@ -90,10 +155,30 @@ Before deploying this Helm chart, ensure you have:
 
    Or use the provided PowerShell script:
    ```powershell
-   .\install-aws.ps1
+   .\install-aws-us-north-1.ps1
+   ```
+
+#### US East 1 (us-east-1)
+
+1. **Navigate to the chart directory:**
+   ```bash
+   cd helm-charts/flask-hello-world
+   ```
+
+2. **Deploy using the AWS values file:**
+   ```bash
+   helm upgrade flask-hello-world . --namespace flask-hello-world --create-namespace \
+       --values values-mend-devops-dev-us-east-1-aws.yaml
+   ```
+
+   Or use the provided PowerShell script:
+   ```powershell
+   .\install-aws-us-east-1.ps1
    ```
 
 ### Azure Deployment
+
+#### West Europe (west-europe)
 
 1. **Navigate to the chart directory:**
    ```bash
@@ -108,7 +193,25 @@ Before deploying this Helm chart, ensure you have:
 
    Or use the provided PowerShell script:
    ```powershell
-   .\install-azure.ps1
+   .\install-azure-west-europe.ps1
+   ```
+
+#### East US (east-us)
+
+1. **Navigate to the chart directory:**
+   ```bash
+   cd helm-charts/flask-hello-world
+   ```
+
+2. **Deploy using the Azure values file:**
+   ```bash
+   helm upgrade flask-hello-world . --namespace flask-hello-world --create-namespace \
+       --values values-mend-devops-dev-east-us-azure.yaml
+   ```
+
+   Or use the provided PowerShell script:
+   ```powershell
+   .\install-azure-east-us.ps1
    ```
 
 ## Ingress Options
@@ -176,8 +279,13 @@ This Helm chart supports multiple ingress controllers and configurations:
 
 After successful deployment, the application will be available at:
 
-- **AWS EKS:** https://flask-hello-world.k8s.eu-north-1.dev.aws.mend-devops.stavco9.com
-- **Azure AKS:** https://flask-hello-world.k8s.west-europe.dev.azure.mend-devops.stavco9.com
+### AWS EKS Clusters
+- **EU North 1:** https://flask-hello-world.k8s.eu-north-1.dev.aws.mend-devops.stavco9.com
+- **US East 1:** https://flask-hello-world.k8s.us-east-1.dev.aws.mend-devops.stavco9.com
+
+### Azure AKS Clusters
+- **West Europe:** https://flask-hello-world.k8s.west-europe.dev.azure.mend-devops.stavco9.com
+- **East US:** https://flask-hello-world.k8s.east-us.dev.azure.mend-devops.stavco9.com
 
 ## Verification
 

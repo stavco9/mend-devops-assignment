@@ -34,3 +34,8 @@ variable "enable_nat_gateway" {
   type    = bool
   default = true
 }
+
+variable "create_resource_group" {
+  type    = bool
+  default = false
+}

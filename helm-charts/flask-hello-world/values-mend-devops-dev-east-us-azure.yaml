@@ -1,0 +1,7 @@
+provider: azure
+
+ingress:
+  enabled: true
+  protocol: https
+  ingressClassName: appgw
+  host: flask-hello-world.k8s.east-us.dev.azure.mend-devops.stavco9.com

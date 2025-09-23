@@ -19,6 +19,9 @@ locals {
 data "azurerm_resource_group" "current" {
   name = var.resource_group_name
 }
+data "azurerm_resource_group" "dns_zone" {
+  name = var.dns_zone_resource_group_name
+}
 data "azurerm_client_config" "current" {}
 data "azurerm_location" "current" {
   location = local.region

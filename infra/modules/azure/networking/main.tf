@@ -7,21 +7,30 @@ locals {
     ManagedBy   = "terraform"
   }
 
-  vnet_name = format("vnet-%s-%s", var.project, var.environment)
+  vnet_name           = format("vnet-%s-%s", var.project, var.environment)
+  resource_group_name = var.create_resource_group ? azurerm_resource_group.main_resource_group[0].name : var.resource_group_name
+}
+
+resource "azurerm_resource_group" "main_resource_group" {
+  count = var.create_resource_group ? 1 : 0
+
+  name     = var.resource_group_name
+  location = var.region
+  tags     = local.tags
 }
 
 resource "azurerm_virtual_network" "vnet" {
   address_space       = [var.vnet_cidr]
   location            = var.region
   name                = local.vnet_name
-  resource_group_name = var.resource_group_name
+  resource_group_name = local.resource_group_name
   tags                = local.tags
 }
 
 resource "azurerm_subnet" "vnet_private_subnet" {
   address_prefixes                  = [var.vnet_private_subnet_cidr]
   name                              = "${local.vnet_name}-private-sn"
-  resource_group_name               = var.resource_group_name
+  resource_group_name               = local.resource_group_name
   virtual_network_name              = azurerm_virtual_network.vnet.name
   private_endpoint_network_policies = "Enabled"
   default_outbound_access_enabled   = false
@@ -30,7 +39,7 @@ resource "azurerm_subnet" "vnet_private_subnet" {
 resource "azurerm_subnet" "vnet_public_subnet" {
   address_prefixes                  = [var.vnet_public_subnet_cidr]
   name                              = "${local.vnet_name}-public-sn"
-  resource_group_name               = var.resource_group_name
+  resource_group_name               = local.resource_group_name
   virtual_network_name              = azurerm_virtual_network.vnet.name
   private_endpoint_network_policies = "Enabled"
   default_outbound_access_enabled   = true
@@ -53,7 +62,7 @@ resource "azurerm_public_ip" "vnet_public_ip" {
 
   name                = "${local.vnet_name}-public-ip"
   location            = var.region
-  resource_group_name = var.resource_group_name
+  resource_group_name = local.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
 
@@ -65,7 +74,7 @@ resource "azurerm_nat_gateway" "vnet_nat_gateway" {
 
   name                = "${local.vnet_name}-nat-gateway"
   location            = var.region
-  resource_group_name = var.resource_group_name
+  resource_group_name = local.resource_group_name
   sku_name            = "Standard"
 
   tags = local.tags

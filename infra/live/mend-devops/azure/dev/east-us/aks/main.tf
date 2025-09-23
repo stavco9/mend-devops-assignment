@@ -3,8 +3,8 @@ locals {
   project             = "mend-devops"
   project_short       = replace(local.project, "-", "")
   environment         = "dev"
-  resource_group_name = "mend-devops-dev-west-europe-rg"
-  region              = "West Europe"
+  resource_group_name = "mend-devops-dev-east-us-rg"
+  region              = "East US"
 
   region_standard = lower(replace(local.region, " ", "-"))
   tenant_id       = data.azurerm_client_config.current.tenant_id
