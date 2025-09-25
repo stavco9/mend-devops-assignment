@@ -178,6 +178,29 @@ This project demonstrates modern DevOps practices and can serve as a reference f
 
 For questions or issues related to this project, please refer to the detailed documentation in each component or create an issue in the repository.
 
+## 🚀 Future Steps
+
+1. **Integrate the IaC into CI/CD pipelines (Like GitHub actions)**
+   - Automate infrastructure provisioning and updates through GitHub Actions
+   - Implement automated testing and validation of Terraform configurations
+   - Set up automated deployment workflows for both AWS and Azure environments
+
+2. **Use Terraform wrappers like Terragrunt / Terraform Cloud / Atlantis**
+   - Implement Terragrunt for better Terraform code organization and DRY principles
+   - Consider Terraform Cloud for state management and remote operations
+   - Evaluate Atlantis for automated Terraform plan/apply workflows in CI/CD
+
+3. **Manage Helm Deployments with GitOps tools like ArgoCD and not from local machine**
+   - Implement ArgoCD for GitOps-based application deployment
+   - Set up automated sync between Git repositories and Kubernetes clusters
+   - Enable declarative application management with automatic drift detection
+
+4. **Extend the cluster with much more observability tools (like Prometheus / EFK)**
+   - Deploy Prometheus and Grafana for comprehensive monitoring and alerting
+   - Implement EFK stack (Elasticsearch, Fluentd, Kibana) for centralized logging
+   - Add distributed tracing with Jaeger or Zipkin
+   - Set up custom dashboards and alerting rules for production workloads
+
 ---
 
 **Note:** This project is designed for educational and demonstration purposes, showcasing modern DevOps practices and multi-cloud Kubernetes deployment strategies.
